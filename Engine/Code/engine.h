@@ -5,7 +5,7 @@
 #pragma once
 
 #include "platform.h"
-#include <glad/glad.h>
+#include "BufferSuppFunctions.h"
 
 typedef glm::vec2  vec2;
 typedef glm::vec3  vec3;
