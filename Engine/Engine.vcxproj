@@ -36,6 +36,7 @@
     <ClInclude Include="Code\BufferSuppFunctions.h" />
     <ClInclude Include="Code\engine.h" />
     <ClInclude Include="Code\Globals.h" />
+    <ClInclude Include="Code\ModelLoadingFunctions.h" />
     <ClInclude Include="Code\platform.h" />
     <ClInclude Include="ThirdParty\glad\include\glad\glad.h" />
     <ClInclude Include="ThirdParty\glad\include\glad\khrplatform.h" />
@@ -50,6 +51,7 @@
     <ClInclude Include="ThirdParty\stb\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="WorkingDir\base_model.glsl" />
     <None Include="WorkingDir\shaders.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
