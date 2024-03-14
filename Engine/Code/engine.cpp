@@ -212,7 +212,7 @@ void Init(App* app)
     Program& texturedGeometryProgram = app->programs[app->texturedGeometryProgramIdx];
     app->programUniformTexture = glGetUniformLocation(texturedGeometryProgram.handle, "uTexture");
 
-    app->diceTexIdx = LoadTexture2D(app, "WorkingDir/dice.png");
+    app->diceTexIdx = LoadTexture2D(app, "dice.png");
 
     app->mode = Mode_TexturedQuad;
 }
