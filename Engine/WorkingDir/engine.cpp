@@ -31,10 +31,10 @@ GLuint CreateProgramFromSource(String programSource, const char* shaderName)
         programSource.str
     };
     const GLint vertexShaderLengths[] = {
-        (GLint)strlen(versionString),
-        (GLint)strlen(shaderNameDefine),
-        (GLint)strlen(vertexShaderDefine),
-        (GLint)programSource.len
+        (GLint) strlen(versionString),
+        (GLint) strlen(shaderNameDefine),
+        (GLint) strlen(vertexShaderDefine),
+        (GLint) programSource.len
     };
     const GLchar* fragmentShaderSource[] = {
         versionString,
@@ -43,10 +43,10 @@ GLuint CreateProgramFromSource(String programSource, const char* shaderName)
         programSource.str
     };
     const GLint fragmentShaderLengths[] = {
-        (GLint)strlen(versionString),
-        (GLint)strlen(shaderNameDefine),
-        (GLint)strlen(fragmentShaderDefine),
-        (GLint)programSource.len
+        (GLint) strlen(versionString),
+        (GLint) strlen(shaderNameDefine),
+        (GLint) strlen(fragmentShaderDefine),
+        (GLint) programSource.len
     };
 
     GLuint vshader = glCreateShader(GL_VERTEX_SHADER);
@@ -117,7 +117,7 @@ u32 LoadProgram(App* app, const char* filepath, const char* programName)
             name);
 
         u8 location = glGetAttribLocation(program.handle, name);
-        program.shaderLayout.attributes.push_back(VertexShaderAttribute{ location, (u8)size });
+        program.shaderLayout.attributes.push_back(VertexShaderAttribute{location, (u8)size});
     }
 
     app->programs.push_back(program);
@@ -172,7 +172,7 @@ GLuint FindVAO(Mesh& mesh, u32 submeshIndex, const Program& program)
         }
         glBindVertexArray(0);
 
-        VAO vao = { ReturnValue, program.handle };
+        VAO vao = {ReturnValue, program.handle};
         Submesh.vaos.push_back(vao);
     }
 
@@ -233,7 +233,7 @@ void Init(App* app)
 void Gui(App* app)
 {
     ImGui::Begin("Info");
-    ImGui::Text("FPS: %f", 1.0f / app->deltaTime);
+    ImGui::Text("FPS: %f", 1.0f/app->deltaTime);
     ImGui::Text("%s", app->openglDebugInfo.c_str());
     ImGui::End();
 }
@@ -259,57 +259,57 @@ void Render(App* app)
 {
     switch (app->mode)
     {
-    case Mode_TexturedQuad:
-    {
-        float aspectRatio = (float)app->displaySize.x / (float)app->displaySize.y;
-        float znear = 0.1f;
-        float zfar = 1000.0f;
-        glm::mat4 projection = glm::perspective(glm::radians(60.0f), aspectRatio, znear, zfar);
-
-        vec3 target = vec3(0.f, 0.f, 0.f);
-        vec3 cameraPosition = vec3(5.0, 5.0, 5.0);
-
-        vec3 zCam = glm::normalize(cameraPosition - target);
-        vec3 xCam = glm::cross(zCam, vec3(0, 1, 0));
-        vec3 yCam = glm::cross(xCam, zCam);
-
-        glm::mat4 view = glm::lookAt(cameraPosition, target, yCam);
-
-        glm::mat4 world = TransformPositionScale(vec3(0.f, 2.0f, 0.0), vec3(0.45f));
-        glm::mat4 WVP = projection * view * world;
-
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glViewport(0, 0, app->displaySize.x, app->displaySize.y);
-
-        const Program& texturedMeshProgram = app->programs[app->texturedMeshProgramIdx];
-        glUseProgram(texturedMeshProgram.handle);
-
-        Model& model = app->models[app->patricioModel];
-        Mesh& mesh = app->meshes[model.meshIdx];
-
-        glUniformMatrix4fv(glGetUniformLocation(texturedMeshProgram.handle, "WVP"), 1, GL_FALSE, &WVP[0][0]);
-
-        for (u32 i = 0; i < mesh.submeshes.size(); ++i)
+        case Mode_TexturedQuad:
         {
-            GLuint vao = FindVAO(mesh, i, texturedMeshProgram);
-            glBindVertexArray(vao);
+            float aspectRatio = (float)app->displaySize.x / (float)app->displaySize.y;
+            float znear = 0.1f;
+            float zfar = 1000.0f;
+            glm::mat4 projection = glm::perspective(glm::radians(60.0f), aspectRatio, znear, zfar);
 
-            u32 subMeshmaterialIdx = model.materialIdx[i];
-            Material& subMeshMaterial = app->materials[subMeshmaterialIdx];
+            vec3 target = vec3(0.f, 0.f, 0.f);
+            vec3 cameraPosition = vec3(5.0, 5.0, 5.0);
 
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, app->textures[subMeshMaterial.albedoTextureIdx].handle);
-            glUniform1i(app->texturedMeshProgram_uTexture, 0);
+            vec3 zCam = glm::normalize(cameraPosition - target);
+            vec3 xCam = glm::cross(zCam, vec3(0, 1, 0));
+            vec3 yCam = glm::cross(xCam, zCam);
 
-            SubMesh& submesh = mesh.submeshes[i];
-            glDrawElements(GL_TRIANGLES, submesh.indices.size(), GL_UNSIGNED_INT, (void*)(u64)submesh.indexOffset);
+            glm::mat4 view = glm::lookAt(cameraPosition, target, yCam);
+
+            glm::mat4 world = TransformPositionScale(vec3(0.f, 2.0f, 0.0), vec3(0.45f));
+            glm::mat4 WVP = projection * view * world;
+
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            glViewport(0,0, app->displaySize.x, app->displaySize.y);
+
+            const Program& texturedMeshProgram = app->programs[app->texturedMeshProgramIdx];
+            glUseProgram(texturedMeshProgram.handle);
+
+            Model& model = app->models[app->patricioModel];
+            Mesh& mesh = app->meshes[model.meshIdx];
+
+            glUniformMatrix4fv(glGetUniformLocation(texturedMeshProgram.handle, "WVP"), 1, GL_FALSE, &WVP[0][0]);
+
+            for (u32 i = 0; i < mesh.submeshes.size(); ++i)
+            {
+                GLuint vao = FindVAO(mesh, i, texturedMeshProgram);
+                glBindVertexArray(vao);
+
+                u32 subMeshmaterialIdx = model.materialIdx[i];
+                Material& subMeshMaterial = app->materials[subMeshmaterialIdx];
+            
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, app->textures[subMeshMaterial.albedoTextureIdx].handle);
+                glUniform1i(app->texturedMeshProgram_uTexture, 0);
+
+                SubMesh& submesh = mesh.submeshes[i];
+                glDrawElements(GL_TRIANGLES, submesh.indices.size(), GL_UNSIGNED_INT, (void*)(u64)submesh.indexOffset);
+            }
         }
-    }
-    break;
+        break;
 
-    default:;
+        default:;
     }
 }
 
