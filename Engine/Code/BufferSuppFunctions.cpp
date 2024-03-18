@@ -2,7 +2,6 @@
 
 namespace BufferManager
 {
-
     bool IsPowerOf2(u32 value)
     {
         return value && !(value & (value - 1));
@@ -26,7 +25,6 @@ namespace BufferManager
 
         return buffer;
     }
-
 
     void BindBuffer(const Buffer& buffer)
     {
@@ -59,6 +57,4 @@ namespace BufferManager
         memcpy((u8*)buffer.data + buffer.head, data, size);
         buffer.head += size;
     }
-
-};
-
+}

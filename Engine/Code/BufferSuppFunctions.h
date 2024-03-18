@@ -5,7 +5,6 @@
 
 namespace BufferManager
 {
-
 #define CreateConstantBuffer(size) CreateBuffer(size, GL_UNIFORM_BUFFER, GL_STREAM_DRAW)
 #define CreateStaticVertexBuffer(size) CreateBuffer(size, GL_ARRAY_BUFFER, GL_STATIC_DRAW)
 #define CreateStaticIndexBuffer(size) CreateBuffer(size, GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW)
@@ -16,17 +15,6 @@ namespace BufferManager
 #define PushVec4(buffer, value) PushAlignedData(buffer, value_ptr(value), sizeof(value), sizeof(vec4))
 #define PushMat3(buffer, value) PushAlignedData(buffer, value_ptr(value), sizeof(value), sizeof(vec4))
 #define PushMat4(buffer, value) PushAlignedData(buffer, value_ptr(value), sizeof(value), sizeof(vec4))
-
-    struct Buffer
-    {
-
-        GLsizei size;
-        GLenum type;
-        GLuint handle;
-        u8* data;
-        u32 head;
-
-    };
 
     bool IsPowerOf2(u32 value);
 

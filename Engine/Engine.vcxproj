@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Code\BufferSuppFunctions.cpp" />
     <ClCompile Include="Code\engine.cpp" />
+    <ClCompile Include="Code\ModelLoadingFunctions.cpp" />
     <ClCompile Include="Code\platform.cpp" />
     <ClCompile Include="ThirdParty\glad\include\glad\glad.c" />
     <ClCompile Include="ThirdParty\imgui-docking\imgui.cpp" />

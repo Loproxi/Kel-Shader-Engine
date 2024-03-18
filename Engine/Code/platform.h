@@ -5,7 +5,6 @@
 
 #pragma once
 
-
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <assert.h>
@@ -14,6 +13,7 @@
 #include <string>
 #include "Globals.h"
 
+#pragma warning(disable : 4267) // conversion from X to Y, possible loss of data
 
 String MakeString(const char *cstr);
 
@@ -38,6 +38,3 @@ u64 GetFileLastWriteTimestamp(const char *filepath);
  * By default, the string is printed in the output console of VisualStudio.
  */
 void LogString(const char* str);
-
-
-

@@ -42,16 +42,19 @@
     <ClCompile Include="ThirdParty\glad\include\glad\glad.c">
       <Filter>Glad</Filter>
     </ClCompile>
-    <ClCompile Include="Code\engine.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\platform.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="ThirdParty\stb\stb.cpp">
       <Filter>Stb</Filter>
     </ClCompile>
     <ClCompile Include="Code\BufferSuppFunctions.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\engine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\ModelLoadingFunctions.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\platform.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,17 +83,11 @@
     <ClInclude Include="ThirdParty\imgui-docking\imstb_truetype.h">
       <Filter>ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Code\engine.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="ThirdParty\glad\include\glad\glad.h">
       <Filter>Glad</Filter>
     </ClInclude>
     <ClInclude Include="ThirdParty\glad\include\glad\khrplatform.h">
       <Filter>Glad</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\platform.h">
-      <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="ThirdParty\stb\stb_image.h">
       <Filter>Stb</Filter>
@@ -98,10 +95,16 @@
     <ClInclude Include="Code\BufferSuppFunctions.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Code\engine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
     <ClInclude Include="Code\Globals.h">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Code\ModelLoadingFunctions.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\platform.h">
       <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
