@@ -1,39 +1,44 @@
+#ifndef MODEL_LOADING_FUNC
+#define MODEL_LOADING_FUNC
+
 #include "Globals.h"
 #include <vector>
 
-namespace ModelLoader 
-{
-
-	struct VertexBufferAttribute 
-	{
-		u8 location;
-		u8 componentCount;
-		u8 offset;
-	};
-
-	struct VertexBufferLayout 
-	{
-		std::vector<VertexBufferAttribute> attributes;
-		u8 stride;
-	};
-
-	struct VertexShaderAttribute
-	{
-		u8 location;
-		u8 componentCount;
-	};
-
-	struct VertexShaderLayout
+	namespace ModelLoader 
 	{
 
-		std::vector<VertexShaderAttribute> attributes;
+		struct VertexBufferAttribute 
+		{
+			u8 location;
+			u8 componentCount;
+			u8 offset;
+		};
 
-	};
+		struct VertexBufferLayout 
+		{
+			std::vector<VertexBufferAttribute> attributes;
+			u8 stride;
+		};
 
-	struct VAO
-	{
-		GLuint handle;
-		GLuint programHandle;
-	};
+		struct VertexShaderAttribute
+		{
+			u8 location;
+			u8 componentCount;
+		};
 
-}
+		struct VertexShaderLayout
+		{
+
+			std::vector<VertexShaderAttribute> attributes;
+
+		};
+
+		struct VAO
+		{
+			GLuint handle;
+			GLuint programHandle;
+		};
+
+	}
+
+#endif // !MODEL_LOADING_FUNC
