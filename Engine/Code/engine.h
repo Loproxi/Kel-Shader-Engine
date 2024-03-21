@@ -72,6 +72,12 @@ struct App
     GLuint vao;
 
     std::string openglDebugInfo;
+
+    GLint maxUniformBufferSize;
+    GLint uniformBlockAlignment; //Alignment between uniform BLOCKS!!!!
+    Buffer localUniformBuffer;
+    std::vector<Entity> entities;
+
 };
 
 void Init(App* app);
