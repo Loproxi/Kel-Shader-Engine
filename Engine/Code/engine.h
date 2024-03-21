@@ -24,6 +24,9 @@ const u16 indices[] =
 
 struct App
 {
+
+    void UpdateEntityBuffer();
+
     // Loop
     f32  deltaTime;
     bool isRunning;
