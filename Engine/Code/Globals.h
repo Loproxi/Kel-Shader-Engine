@@ -137,7 +137,8 @@ struct Model
 
 enum Mode
 {
-    Mode_TexturedQuad,
+    Mode_Forward,
+    Mode_Deferred,
     Mode_Count
 };
 
@@ -194,6 +195,7 @@ struct Light
     vec3 color;
     vec3 direction;
     vec3 position;
+    //afegir rango per la llum
 };
 
 #define ILOG(...)                 \
