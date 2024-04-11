@@ -27,6 +27,14 @@ struct App
 
     void UpdateEntityBuffer();
 
+    void ConfigureFrameBuffer(FrameBuffer& aConfigFB);
+
+    void CreateDepthAttachment(GLuint& depthAttachmentHandle);
+
+    void CreateColorAttachment(GLuint& colorAttachmentHandle);
+
+    void RenderGeometry(const Program& aBindedProgram);
+
     // Loop
     f32  deltaTime;
     bool isRunning;
@@ -47,8 +55,9 @@ struct App
     std::vector<Program>    programs;
 
     // program indices
-    u32 texturedGeometryProgramIdx = 0;
-    u32 texturedMeshProgramIdx = 0;
+    u32 renderToBackBufferShader = 0;
+    u32 renderToFrameBufferShader = 0;
+    u32 framebufferToQuadShader = 0;
 
     u32 patricioModel = 0;
     GLuint texturedMeshProgram_uTexture;
@@ -85,20 +94,16 @@ struct App
     GLuint globalParamsOffset;
     GLuint globalParamsSize;
 
-    GLuint framebufferHandle;
-    GLuint colorAttachmentHandle;
+    FrameBuffer deferredFrameBuffer;
 
 };
 
 void Init(App* app);
-
-void CreateDepthAttachment(GLuint& depthAttachmentHandle, App* app);
-
-void CreateColorAttachment(GLuint& colorAttachmentHandle, App* app);
 
 void Gui(App* app);
 
 void Update(App* app);
 
 void Render(App* app);
+
 

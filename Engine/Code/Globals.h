@@ -198,6 +198,13 @@ struct Light
     //afegir rango per la llum
 };
 
+struct FrameBuffer
+{
+    std::vector<GLuint> colorAttachment;
+    GLuint fbHandle;
+    GLuint depthHandle;
+};
+
 #define ILOG(...)                 \
 {                                 \
 char logBuffer[1024] = {};        \
