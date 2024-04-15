@@ -98,8 +98,6 @@ void main()
 			
 			lightResult = (ambient * attenuation) + (diffuse * attenuation) + (specular * attenuation);
 			finalColor += vec4(lightResult,1.0) * textureColor;
-
-			finalColor += vec4(light.position,1.0);
 		}
 
 	}
