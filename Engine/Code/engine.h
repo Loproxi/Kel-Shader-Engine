@@ -10,10 +10,10 @@
 #include "Globals.h"
 
 const VertexV3V2 vertices[] = {
-    {glm::vec3(-0.5,-0.5,0.0), glm::vec2(0.0,0.0)},
-    {glm::vec3(0.5,-0.5,0.0), glm::vec2(1.0,0.0)},
-    {glm::vec3(0.5,0.5,0.0), glm::vec2(1.0,1.0)},
-    {glm::vec3(-0.5,0.5,0.0), glm::vec2(0.0,1.0)},
+    {glm::vec3(-1.0,-1.0,0.0), glm::vec2(0.0,0.0)},
+    {glm::vec3(1.0,-1.0,0.0), glm::vec2(1.0,0.0)},
+    {glm::vec3(1.0,1.0,0.0), glm::vec2(1.0,1.0)},
+    {glm::vec3(-1.0,1.0,0.0), glm::vec2(0.0,1.0)},
 };
 
 const u16 indices[] =
@@ -34,6 +34,8 @@ struct App
     void CreateColorAttachment(GLuint& colorAttachmentHandle);
 
     void RenderGeometry(const Program& aBindedProgram);
+
+    const GLuint CreateTexture(const bool isFloatingPoint = false);
 
     // Loop
     f32  deltaTime;

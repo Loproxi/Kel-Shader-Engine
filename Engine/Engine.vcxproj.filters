@@ -118,5 +118,8 @@
     <None Include="WorkingDir\RENDER_TO_FB.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="WorkingDir\FB_TO_BB.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
