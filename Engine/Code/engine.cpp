@@ -231,16 +231,14 @@ void App::ConfigureFrameBuffer(FrameBuffer& aConfigFB)
     aConfigFB.colorAttachment.push_back(CreateTexture(true));
     aConfigFB.colorAttachment.push_back(CreateTexture(true));
 
-    GLuint depthAttachmentHandle = 0;
-
-    CreateDepthAttachment(depthAttachmentHandle);
+    CreateDepthAttachment(aConfigFB.depthHandle);
 
     glGenFramebuffers(1, &aConfigFB.fbHandle);
     glBindFramebuffer(GL_FRAMEBUFFER, aConfigFB.fbHandle);
 
     std::vector<GLuint> drawBuffers;
 
-    for (size_t i = 0; i < NUMBER_OF_CA; i++)
+    for (size_t i = 0; i < aConfigFB.colorAttachment.size(); i++)
     {
         GLuint position = GL_COLOR_ATTACHMENT0 + i;
         glFramebufferTexture(GL_FRAMEBUFFER, position, aConfigFB.colorAttachment[i], 0);
@@ -296,9 +294,14 @@ void Init(App* app)
     const Program& texturedMeshProgram = app->programs[app->renderToFrameBufferShader];
     app->texturedMeshProgram_uTexture = glGetUniformLocation(texturedMeshProgram.handle, "uTexture");
     u32 PatrickModelIndex = ModelLoader::LoadModel(app, "Patrick/Patrick.obj");
-    //u32 GroundModelIndex = ModelLoader::LoadModel(app, "./Ground.obj");
+    u32 GroundModelIndex = ModelLoader::LoadModel(app, "Patrick/Ground.obj");
 
     //app->diceTexIdx = ModelLoader::LoadTexture2D(app, "dice.png");
+
+    VertexBufferLayout vertexBufferLayout = {};
+    vertexBufferLayout.attributes.push_back(VertexBufferAttribute{ 0, 3, 0 });
+    vertexBufferLayout.attributes.push_back(VertexBufferAttribute{ 2, 2, 3 * sizeof(float) });
+    vertexBufferLayout.stride = 5 * sizeof(float);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -312,6 +315,8 @@ void Init(App* app)
     app->entities.push_back({ TransformPositionScale(vec3(1.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
     app->entities.push_back({ TransformPositionScale(vec3(2.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
     app->entities.push_back({ TransformPositionScale(vec3(3.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
+
+    app->entities.push_back({ TransformPositionScale(vec3(0.0, -5.0, 0.0), vec3(1.0, 1.0, 1.0)), GroundModelIndex, 0, 0 });
 
     app->lights.push_back({ LightType::LightType_Directional,vec3(1.0,1.0,1.0),vec3(1.0,-1.0,1.0),vec3(1.0,0.0,0.0) });
     app->lights.push_back({ LightType::LightType_Point,vec3(1.0,0.0,0.0),vec3(1.0,1.0,1.0),vec3(0.0,1.0,1.0) });
@@ -446,7 +451,8 @@ void Render(App* app)
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindVertexArray(0);
+        glUseProgram(0);
     }
     break;
 
