@@ -227,7 +227,7 @@ void App::ConfigureFrameBuffer(FrameBuffer& aConfigFB)
     }*/
 
     aConfigFB.colorAttachment.push_back(CreateTexture());
-    aConfigFB.colorAttachment.push_back(CreateTexture());
+    aConfigFB.colorAttachment.push_back(CreateTexture(true));
     aConfigFB.colorAttachment.push_back(CreateTexture(true));
     aConfigFB.colorAttachment.push_back(CreateTexture(true));
 
