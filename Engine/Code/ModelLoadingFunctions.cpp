@@ -251,6 +251,7 @@ namespace ModelLoader
             aiProcess_PreTransformVertices |
             aiProcess_ImproveCacheLocality |
             aiProcess_OptimizeMeshes |
+            aiProcess_CalcTangentSpace |
             aiProcess_SortByPType);
 
         if (!scene)
