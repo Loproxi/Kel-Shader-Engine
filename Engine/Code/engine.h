@@ -102,6 +102,10 @@ struct App
 
     vec3 camFront = vec3(0.0f, 0.0f, -1.0f);
     vec3 cameraPosition = vec3(0.0, 0.0, 0.0);
+    float yaw = -90.0f;
+    float pitch = -90.0f;
+
+    bool firstMouseEnter = true;
 
 };
 
