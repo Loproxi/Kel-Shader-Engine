@@ -295,6 +295,7 @@ void Init(App* app)
     app->texturedMeshProgram_uTexture = glGetUniformLocation(texturedMeshProgram.handle, "uTexture");
     u32 PatrickModelIndex = ModelLoader::LoadModel(app, "Patrick/Patrick.obj");
     u32 GroundModelIndex = ModelLoader::LoadModel(app, "Patrick/Ground.obj");
+    u32 SphereModelIndex = ModelLoader::LoadModel(app, "Patrick/sphere.obj");
 
     //app->diceTexIdx = ModelLoader::LoadTexture2D(app, "dice.png");
 
@@ -315,11 +316,11 @@ void Init(App* app)
     app->entities.push_back({ TransformPositionScale(vec3(1.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
     app->entities.push_back({ TransformPositionScale(vec3(2.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
     app->entities.push_back({ TransformPositionScale(vec3(3.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
+    //app->entities.push_back({ TransformPositionScale(vec3(3.f, 0.0f, 2.0), vec3(0.45f)),SquidwardModelIndex,0,0 });
 
     app->entities.push_back({ TransformPositionScale(vec3(0.0, -5.0, 0.0), vec3(1.0, 1.0, 1.0)), GroundModelIndex, 0, 0 });
 
-    app->lights.push_back({ LightType::LightType_Directional,vec3(1.0,1.0,1.0),vec3(1.0,-1.0,1.0),vec3(1.0,0.0,0.0) });
-    app->lights.push_back({ LightType::LightType_Point,vec3(1.0,0.0,0.0),vec3(1.0,1.0,1.0),vec3(0.0,1.0,1.0) });
+    app->AddPointLight(SphereModelIndex, vec3(2.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0));
 
     app->ConfigureFrameBuffer(app->deferredFrameBuffer);
 
@@ -386,15 +387,12 @@ void Render(App* app)
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
         glViewport(0, 0, app->displaySize.x, app->displaySize.y);
-
 
         const Program& ForwardProgram = app->programs[app->renderToBackBufferShader];
         glUseProgram(ForwardProgram.handle);
 
         app->RenderGeometry(ForwardProgram);
-
 
     }
     break;
@@ -514,6 +512,22 @@ const GLuint App::CreateTexture(const bool isFloatingPoint)
     return textureHandle;
 }
 
+void App::AddPointLight(u32 modelIndex,vec3 position, vec3 lightcolor)
+{
+
+    lights.push_back({ LightType::LightType_Point,lightcolor,vec3(1.0,1.0,1.0),position });
+    entities.push_back({ TransformPositionScale(position, vec3(0.15f)),modelIndex,0,0 });
+
+}
+
+void App::AddDirectionalLight(u32 modelIndex,vec3 position, vec3 lightcolor)
+{
+
+    lights.push_back({ LightType::LightType_Directional,lightcolor,vec3(1.0,-1.0,1.0),position });
+    //entities.push_back({ TransformPositionScale(position, vec3(0.45f)),PatrickModelIndex,0,0 });
+    
+}
+
 void App::UpdateEntityBuffer()
 {
 
@@ -574,7 +588,7 @@ void App::UpdateEntityBuffer()
 
 void App::HandleCameraInput(vec3& yCam)
 {
-    const float cameraSpeed = 2.05f * deltaTime; // adjust accordingly
+    const float cameraSpeed = 2.05f * deltaTime; 
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_W) == GLFW_PRESS)
         cameraPosition += cameraSpeed * camFront;
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_S) == GLFW_PRESS)
