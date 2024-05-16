@@ -313,16 +313,16 @@ void Init(App* app)
 
     app->localUniformBuffer = CreateConstantBuffer(app->maxUniformBufferSize);
 
-    app->entities.push_back({ TransformPositionScale(vec3(0.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
-    app->entities.push_back({ TransformPositionScale(vec3(1.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
-    app->entities.push_back({ TransformPositionScale(vec3(2.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
-    app->entities.push_back({ TransformPositionScale(vec3(3.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
+    app->entities.push_back({TransformPositionScale(vec3(0.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
+    app->entities.push_back({TransformPositionScale(vec3(1.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
+    app->entities.push_back({TransformPositionScale(vec3(2.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
+    app->entities.push_back({TransformPositionScale(vec3(3.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
     //app->entities.push_back({ TransformPositionScale(vec3(3.f, 0.0f, 2.0), vec3(0.45f)),SquidwardModelIndex,0,0 });
 
-    app->entities.push_back({ TransformPositionScale(vec3(0.0, -5.0, 0.0), vec3(1.0, 1.0, 1.0)), GroundModelIndex, 0, 0 });
+    app->entities.push_back({TransformPositionScale(vec3(0.0, -5.0, 0.0), vec3(1.0, 1.0, 1.0)), GroundModelIndex, 0, 0 });
 
+    app->AddDirectionalLight(QuadModelIndex, vec3(4.0, 1.0, 1.0), vec3(1.0, 1.0, 0.0), vec3(1.0, 1.0, 1.0));
     app->AddPointLight(SphereModelIndex, vec3(2.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0));
-    app->AddDirectionalLight(QuadModelIndex, vec3(4.0, 1.0, 1.0),vec3(1.0,1.0,0.0), vec3(1.0, 1.0, 1.0));
     app->AddPointLight(SphereModelIndex, vec3(-2.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0));
     app->AddPointLight(SphereModelIndex, vec3(5.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0));
 
@@ -351,16 +351,20 @@ void Gui(App* app)
             }
 
         }
-
         ImGui::EndCombo();
     }
 
+    ImGui::DragFloat3("Light Position", &app->lights[0].position.x);
+
     if (app->mode == Mode::Mode_Deferred)
     {
+
         for (size_t i = 0; i < app->deferredFrameBuffer.colorAttachment.size(); i++)
         {
             ImGui::Image((ImTextureID)app->deferredFrameBuffer.colorAttachment[i], ImVec2(250, 150), ImVec2(0, 1), ImVec2(1, 0));
         }
+        ImGui::Image((ImTextureID)app->deferredFrameBuffer.depthHandle, ImVec2(250, 150), ImVec2(0, 1), ImVec2(1, 0));
+
     }
     
     ImGui::End();
@@ -448,6 +452,10 @@ void Render(App* app)
         glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.colorAttachment[3]);
         glUniform1i(glGetUniformLocation(FBToBB.handle, "uViewDir"), 3);
 
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.depthHandle);
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "uDepth"), 4);
+
         glBindVertexArray(app->vao);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
@@ -517,9 +525,11 @@ const GLuint App::CreateTexture(const bool isFloatingPoint)
 
 void App::AddPointLight(u32 modelIndex,vec3 position, vec3 lightcolor)
 {
+    Light light = { LightType::LightType_Point,lightcolor,vec3(1.0,1.0,1.0),position };
+    entities.push_back({TransformPositionScale(position, vec3(0.15f)),modelIndex,0,0 });
+    lights.push_back(light);
 
-    lights.push_back({ LightType::LightType_Point,lightcolor,vec3(1.0,1.0,1.0),position });
-    entities.push_back({ TransformPositionScale(position, vec3(0.15f)),modelIndex,0,0 });
+    lights[lights.size()-1].visualRef = entities.size()-1;
 
 }
 
@@ -527,7 +537,9 @@ void App::AddDirectionalLight(u32 modelIndex,vec3 position,vec3 direction, vec3 
 {
 
     lights.push_back({ LightType::LightType_Directional,lightcolor,direction,position });
-    entities.push_back({ TransformPositionScale(position, vec3(0.15f)),modelIndex,0,0 });
+    entities.push_back({TransformPositionScale(position, vec3(0.15f)),modelIndex,0,0 });
+
+    lights[lights.size() - 1].visualRef = entities.size() - 1;
     
 }
 
@@ -559,9 +571,13 @@ void App::UpdateEntityBuffer()
 
     for (size_t i = 0; i < lights.size(); ++i)
     {
+
         BufferManager::AlignHead(localUniformBuffer, sizeof(vec4));
 
         Light& light = lights[i];
+
+        entities[light.visualRef].worldMatrix = TransformPositionScale(light.position, vec3(0.15f));
+
         PushUInt(localUniformBuffer, light.type);
         PushVec3(localUniformBuffer, light.color);
         PushVec3(localUniformBuffer, light.direction);

@@ -39,6 +39,7 @@ uniform sampler2D uAlbedo;
 uniform sampler2D uNormals;
 uniform sampler2D uPosition;
 uniform sampler2D uViewDir;
+uniform sampler2D uDepth;
 
 layout(location = 0) out vec4 oColor;
 

@@ -195,6 +195,7 @@ struct Light
     vec3 color;
     vec3 direction;
     vec3 position;
+    int visualRef;
     //afegir rango per la llum
 };
 
