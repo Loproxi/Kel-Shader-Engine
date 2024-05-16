@@ -297,6 +297,7 @@ void Init(App* app)
     u32 GroundModelIndex = ModelLoader::LoadModel(app, "Patrick/Ground.obj");
     u32 SphereModelIndex = ModelLoader::LoadModel(app, "Patrick/sphere.obj");
     u32 QuadModelIndex = ModelLoader::LoadModel(app, "Patrick/quad.obj");
+    u32 SquidwardModelIndex = ModelLoader::LoadModel(app, "Patrick/squidward2.obj");
 
     //app->diceTexIdx = ModelLoader::LoadTexture2D(app, "dice.png");
 
@@ -317,7 +318,7 @@ void Init(App* app)
     app->entities.push_back({TransformPositionScale(vec3(1.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
     app->entities.push_back({TransformPositionScale(vec3(2.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
     app->entities.push_back({TransformPositionScale(vec3(3.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
-    //app->entities.push_back({ TransformPositionScale(vec3(3.f, 0.0f, 2.0), vec3(0.45f)),SquidwardModelIndex,0,0 });
+    app->entities.push_back({ TransformPositionScale(vec3(3.f, -2.0f, 2.0), vec3(0.05f)),SquidwardModelIndex,0,0 });
 
     app->entities.push_back({TransformPositionScale(vec3(0.0, -5.0, 0.0), vec3(1.0, 1.0, 1.0)), GroundModelIndex, 0, 0 });
 
