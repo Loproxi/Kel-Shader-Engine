@@ -41,7 +41,7 @@ struct App
 
     void AddPointLight(u32 modelIndex,vec3 position, vec3 color);
 
-    void AddDirectionalLight(u32 modelIndex,vec3 position, vec3 color);
+    void AddDirectionalLight(u32 modelIndex,vec3 position, vec3 direction, vec3 color);
 
     // Loop
     f32  deltaTime;

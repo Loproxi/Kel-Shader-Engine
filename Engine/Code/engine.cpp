@@ -296,6 +296,7 @@ void Init(App* app)
     u32 PatrickModelIndex = ModelLoader::LoadModel(app, "Patrick/Patrick.obj");
     u32 GroundModelIndex = ModelLoader::LoadModel(app, "Patrick/Ground.obj");
     u32 SphereModelIndex = ModelLoader::LoadModel(app, "Patrick/sphere.obj");
+    u32 QuadModelIndex = ModelLoader::LoadModel(app, "Patrick/quad.obj");
 
     //app->diceTexIdx = ModelLoader::LoadTexture2D(app, "dice.png");
 
@@ -321,6 +322,9 @@ void Init(App* app)
     app->entities.push_back({ TransformPositionScale(vec3(0.0, -5.0, 0.0), vec3(1.0, 1.0, 1.0)), GroundModelIndex, 0, 0 });
 
     app->AddPointLight(SphereModelIndex, vec3(2.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0));
+    app->AddDirectionalLight(QuadModelIndex, vec3(4.0, 1.0, 1.0),vec3(1.0,1.0,0.0), vec3(1.0, 1.0, 1.0));
+    app->AddPointLight(SphereModelIndex, vec3(-2.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0));
+    app->AddPointLight(SphereModelIndex, vec3(5.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0));
 
     app->ConfigureFrameBuffer(app->deferredFrameBuffer);
 
@@ -408,8 +412,7 @@ void Render(App* app)
 
         glBindFramebuffer(GL_FRAMEBUFFER, app->deferredFrameBuffer.fbHandle);
 
-        GLuint drawBuffers[] = { app->deferredFrameBuffer.fbHandle };
-        glDrawBuffers(app->deferredFrameBuffer.colorAttachment.size(), drawBuffers);
+        glDrawBuffers(app->deferredFrameBuffer.colorAttachment.size(), app->deferredFrameBuffer.colorAttachment.data());
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -520,11 +523,11 @@ void App::AddPointLight(u32 modelIndex,vec3 position, vec3 lightcolor)
 
 }
 
-void App::AddDirectionalLight(u32 modelIndex,vec3 position, vec3 lightcolor)
+void App::AddDirectionalLight(u32 modelIndex,vec3 position,vec3 direction, vec3 lightcolor)
 {
 
-    lights.push_back({ LightType::LightType_Directional,lightcolor,vec3(1.0,-1.0,1.0),position });
-    //entities.push_back({ TransformPositionScale(position, vec3(0.45f)),PatrickModelIndex,0,0 });
+    lights.push_back({ LightType::LightType_Directional,lightcolor,direction,position });
+    entities.push_back({ TransformPositionScale(position, vec3(0.15f)),modelIndex,0,0 });
     
 }
 
