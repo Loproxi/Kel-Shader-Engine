@@ -298,6 +298,8 @@ void Init(App* app)
     u32 SphereModelIndex = ModelLoader::LoadModel(app, "Patrick/sphere.obj");
     u32 QuadModelIndex = ModelLoader::LoadModel(app, "Patrick/quad.obj");
     u32 SquidwardModelIndex = ModelLoader::LoadModel(app, "Patrick/squidward2.obj");
+    u32 HollowModelIndex = ModelLoader::LoadModel(app, "Patrick/jojoHollow.obj");
+    u32 MoonModelIndex = ModelLoader::LoadModel(app, "Patrick/moon.obj");
 
     //app->diceTexIdx = ModelLoader::LoadTexture2D(app, "dice.png");
 
@@ -314,11 +316,11 @@ void Init(App* app)
 
     app->localUniformBuffer = CreateConstantBuffer(app->maxUniformBufferSize);
 
-    app->entities.push_back({TransformPositionScale(vec3(0.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
-    app->entities.push_back({TransformPositionScale(vec3(1.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
-    app->entities.push_back({TransformPositionScale(vec3(2.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
-    app->entities.push_back({TransformPositionScale(vec3(3.f, 0.0f, 0.0), vec3(0.45f)),PatrickModelIndex,0,0 });
+    app->entities.push_back({TransformPositionScale(vec3(0.f, 0.0f, 2.0), vec3(0.45f)),PatrickModelIndex,0,0 });
+    app->entities.push_back({TransformPositionScale(vec3(2.f, 0.0f, 2.0), vec3(0.45f)),PatrickModelIndex,0,0 });
     app->entities.push_back({ TransformPositionScale(vec3(3.f, -2.0f, 2.0), vec3(0.05f)),SquidwardModelIndex,0,0 });
+    app->entities.push_back({ TransformPositionScale(vec3(0.f, -12.0f, -6.0), vec3(0.85f)),HollowModelIndex,0,0 });
+    app->entities.push_back({ TransformPositionScale(vec3(0.f, -12.0f, -16.0), vec3(0.85f)),MoonModelIndex,0,0 });
 
     app->entities.push_back({TransformPositionScale(vec3(0.0, -5.0, 0.0), vec3(1.0, 1.0, 1.0)), GroundModelIndex, 0, 0 });
 
@@ -326,9 +328,12 @@ void Init(App* app)
     app->AddDirectionalLight(QuadModelIndex, vec3(4.0, 1.0, 1.0), vec3(1.0, 1.0, 0.0), vec3(1.0, 1.0, 1.0));
     app->AddPointLight(SphereModelIndex, vec3(2.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0));
     app->AddPointLight(SphereModelIndex, vec3(-2.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0));
-    app->AddPointLight(SphereModelIndex, vec3(5.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0));
+    app->AddPointLight(SphereModelIndex, vec3(0.0, 2.0, -8.0), vec3(1.0, 1.0, 1.0));
     app->AddPointLight(SphereModelIndex, vec3(6.0, 4.0, 5.0), vec3(1.0, 0.0, 0.0));
     app->AddPointLight(SphereModelIndex, vec3(2.0, 2.0, 2.0), vec3(0.0, 0.0, 1.0));
+    app->AddPointLight(SphereModelIndex, vec3(0.f, 8.0f, -32.0), vec3(1.0, 0.0, 0.0));
+    app->AddPointLight(SphereModelIndex, vec3(13.0f, 8.0f, -37.0), vec3(0.0, 1.0, 0.0));
+    app->AddPointLight(SphereModelIndex, vec3(-10.0f, 7.0f, -37.0), vec3(0.0, 0.0, 1.0));
 
     app->ConfigureFrameBuffer(app->deferredFrameBuffer);
 
@@ -486,6 +491,7 @@ void Render(App* app)
         glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.depthHandle);
         glUniform1i(glGetUniformLocation(FBToBB.handle, "uDepth"), 4);
 
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "UseNormal"), app->useNormal ? 1 : 0);
         glUniform1i(glGetUniformLocation(FBToBB.handle, "UseDepth"), app->useDepth ? 1 : 0);
 
         glBindVertexArray(app->vao);
@@ -549,6 +555,7 @@ void Render(App* app)
         glUniform1i(glGetUniformLocation(FBToBB.handle, "uDepth"), 4);
 
         glUniform1i(glGetUniformLocation(FBToBB.handle, "UseNormal"), app->useNormal ? 1 : 0);
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "UseDepth"), app->useDepth ? 1 : 0);
 
         glBindVertexArray(app->vao);
 
@@ -609,6 +616,9 @@ void Render(App* app)
         glActiveTexture(GL_TEXTURE4);
         glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.depthHandle);
         glUniform1i(glGetUniformLocation(FBToBB.handle, "uDepth"), 4);
+
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "UseNormal"), app->useNormal ? 1 : 0);
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "UseDepth"), app->useDepth ? 1 : 0);
 
         glBindVertexArray(app->vao);
 
