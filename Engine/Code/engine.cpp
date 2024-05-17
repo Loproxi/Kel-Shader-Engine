@@ -293,13 +293,13 @@ void Init(App* app)
 
     const Program& texturedMeshProgram = app->programs[app->renderToFrameBufferShader];
     app->texturedMeshProgram_uTexture = glGetUniformLocation(texturedMeshProgram.handle, "uTexture");
-    u32 PatrickModelIndex = ModelLoader::LoadModel(app, "Patrick/Patrick.obj");
-    u32 GroundModelIndex = ModelLoader::LoadModel(app, "Patrick/Ground.obj");
-    u32 SphereModelIndex = ModelLoader::LoadModel(app, "Patrick/sphere.obj");
-    u32 QuadModelIndex = ModelLoader::LoadModel(app, "Patrick/quad.obj");
-    u32 SquidwardModelIndex = ModelLoader::LoadModel(app, "Patrick/squidward2.obj");
-    u32 HollowModelIndex = ModelLoader::LoadModel(app, "Patrick/jojoHollow.obj");
-    u32 MoonModelIndex = ModelLoader::LoadModel(app, "Patrick/moon.obj");
+    u32 PatrickModelIndex = ModelLoader::LoadModel(app, "Assets/Patrick.obj");
+    u32 GroundModelIndex = ModelLoader::LoadModel(app, "Assets/Ground.obj");
+    u32 SphereModelIndex = ModelLoader::LoadModel(app, "Assets/sphere.obj");
+    u32 QuadModelIndex = ModelLoader::LoadModel(app, "Assets/quad.obj");
+    u32 SquidwardModelIndex = ModelLoader::LoadModel(app, "Assets/squidward2.obj");
+    u32 HollowModelIndex = ModelLoader::LoadModel(app, "Assets/jojoHollow.obj");
+    u32 MoonModelIndex = ModelLoader::LoadModel(app, "Assets/moon.obj");
 
     //app->diceTexIdx = ModelLoader::LoadTexture2D(app, "dice.png");
 
