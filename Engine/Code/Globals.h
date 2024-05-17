@@ -139,6 +139,8 @@ enum Mode
 {
     Mode_Forward,
     Mode_Deferred,
+    Mode_Depth,
+    Mode_Normals,
     Mode_Count
 };
 

@@ -41,6 +41,9 @@ uniform sampler2D uPosition;
 uniform sampler2D uViewDir;
 uniform sampler2D uDepth;
 
+uniform bool UseDepth;
+uniform bool UseNormal;
+
 layout(location = 0) out vec4 oColor;
 
 void CalculateBlitVars(in Light light ,out vec3 ambient,out vec3 diffuse, out vec3 specular)
@@ -104,6 +107,16 @@ void main()
 	}
 
 	oColor = finalColor;
+
+	if(UseDepth)
+	{
+		oColor = texture(uDepth, vTexCoord);
+	}
+	if(UseNormal)
+	{
+		oColor = texture(uNormals, vTexCoord);
+	}
+	
 }
 
 #endif

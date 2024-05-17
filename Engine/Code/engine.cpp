@@ -286,7 +286,7 @@ void Init(App* app)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, app->embeddedElements);
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
+    
     app->renderToBackBufferShader = LoadProgram(app, "RENDER_TO_BB.glsl", "RENDER_TO_BB");
     app->renderToFrameBufferShader = LoadProgram(app, "RENDER_TO_FB.glsl", "RENDER_TO_FB");
     app->framebufferToQuadShader = LoadProgram(app, "FB_TO_BB.glsl", "FB_TO_BB");
@@ -322,10 +322,13 @@ void Init(App* app)
 
     app->entities.push_back({TransformPositionScale(vec3(0.0, -5.0, 0.0), vec3(1.0, 1.0, 1.0)), GroundModelIndex, 0, 0 });
 
+    app->AddDirectionalLight(QuadModelIndex, vec3(7.0, 2.0, 3.0), vec3(-1.0, -1.0, 0.0), vec3(1.0, 1.0, 1.0));
     app->AddDirectionalLight(QuadModelIndex, vec3(4.0, 1.0, 1.0), vec3(1.0, 1.0, 0.0), vec3(1.0, 1.0, 1.0));
     app->AddPointLight(SphereModelIndex, vec3(2.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0));
     app->AddPointLight(SphereModelIndex, vec3(-2.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0));
     app->AddPointLight(SphereModelIndex, vec3(5.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0));
+    app->AddPointLight(SphereModelIndex, vec3(6.0, 4.0, 5.0), vec3(1.0, 0.0, 0.0));
+    app->AddPointLight(SphereModelIndex, vec3(2.0, 2.0, 2.0), vec3(0.0, 0.0, 1.0));
 
     app->ConfigureFrameBuffer(app->deferredFrameBuffer);
 
@@ -338,7 +341,7 @@ void Gui(App* app)
     ImGui::Text("FPS: %f", 1.0f / app->deltaTime);
     ImGui::Text("%s", app->openglDebugInfo.c_str());
 
-    const char* RenderModes[] = { "FORWARD","DEFERRED" };
+    const char* RenderModes[] = { "FORWARD","DEFERRED","DEPTH","NORMALS"};
     if (ImGui::BeginCombo("Render Mode", RenderModes[app->mode]))
     {
 
@@ -349,13 +352,39 @@ void Gui(App* app)
             if (ImGui::Selectable(RenderModes[i], isSelected))
             {
                 app->mode = static_cast<Mode>(i);
+                if (app->mode == Mode::Mode_Depth)
+                {
+                    app->useDepth = true;
+                    app->useNormal = false;
+                }
+                else if (app->mode == Mode::Mode_Normals)
+                {
+                    app->useDepth = false;
+                    app->useNormal = true;
+                }
+                else
+                {
+                    app->useDepth = false;
+                    app->useNormal = false;
+                }
             }
 
         }
         ImGui::EndCombo();
     }
 
-    ImGui::DragFloat3("Light Position", &app->lights[0].position.x);
+    for (int i = 0; i < app->lights.size(); i++)
+    {
+        std::string type = app->lights[i].type == LightType_Directional ? "Directional" : "Point";
+        std::string label = "Light Position " + std::to_string(i);
+        std::string colorLabel = "Light Color " + std::to_string(i);
+        if (ImGui::CollapsingHeader((type + " Light " + std::to_string(i)).c_str()))
+        {
+            ImGui::DragFloat3(label.c_str(), &app->lights[i].position.x);
+            ImGui::ColorEdit3(colorLabel.c_str(), &app->lights[i].color.x);
+        }
+    }
+    
 
     if (app->mode == Mode::Mode_Deferred)
     {
@@ -403,6 +432,130 @@ void Render(App* app)
 
         app->RenderGeometry(ForwardProgram);
 
+    }
+    break;
+    case Mode_Depth:
+    {
+
+        app->UpdateEntityBuffer();
+
+        //RENDER TO FB COLOR ATTCH.
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0, 0, app->displaySize.x, app->displaySize.y);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, app->deferredFrameBuffer.fbHandle);
+
+        glDrawBuffers(app->deferredFrameBuffer.colorAttachment.size(), app->deferredFrameBuffer.colorAttachment.data());
+
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        const Program& DeferredProgram = app->programs[app->renderToFrameBufferShader];
+        glUseProgram(DeferredProgram.handle);
+        app->RenderGeometry(DeferredProgram);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        //Render to BB from ColorAtt.
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0, 0, app->displaySize.x, app->displaySize.y);
+
+        const Program& FBToBB = app->programs[app->framebufferToQuadShader];
+        glUseProgram(FBToBB.handle);
+
+        glBindBufferRange(GL_UNIFORM_BUFFER, BINDING(0), app->localUniformBuffer.handle, app->globalParamsOffset, app->globalParamsSize);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.colorAttachment[0]);
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "uAlbedo"), 0);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.colorAttachment[1]);
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "uNormals"), 1);
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.colorAttachment[2]);
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "uPosition"), 2);
+
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.colorAttachment[3]);
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "uViewDir"), 3);
+
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.depthHandle);
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "uDepth"), 4);
+
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "UseDepth"), app->useDepth ? 1 : 0);
+
+        glBindVertexArray(app->vao);
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
+
+        glBindVertexArray(0);
+        glUseProgram(0);
+
+    }
+    break;
+    case Mode_Normals:
+    {
+        app->UpdateEntityBuffer();
+
+        //RENDER TO FB COLOR ATTCH.
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0, 0, app->displaySize.x, app->displaySize.y);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, app->deferredFrameBuffer.fbHandle);
+
+        glDrawBuffers(app->deferredFrameBuffer.colorAttachment.size(), app->deferredFrameBuffer.colorAttachment.data());
+
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        const Program& DeferredProgram = app->programs[app->renderToFrameBufferShader];
+        glUseProgram(DeferredProgram.handle);
+        app->RenderGeometry(DeferredProgram);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        //Render to BB from ColorAtt.
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0, 0, app->displaySize.x, app->displaySize.y);
+
+        const Program& FBToBB = app->programs[app->framebufferToQuadShader];
+        glUseProgram(FBToBB.handle);
+
+        glBindBufferRange(GL_UNIFORM_BUFFER, BINDING(0), app->localUniformBuffer.handle, app->globalParamsOffset, app->globalParamsSize);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.colorAttachment[0]);
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "uAlbedo"), 0);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.colorAttachment[1]);
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "uNormals"), 1);
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.colorAttachment[2]);
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "uPosition"), 2);
+
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.colorAttachment[3]);
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "uViewDir"), 3);
+
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, app->deferredFrameBuffer.depthHandle);
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "uDepth"), 4);
+
+        glUniform1i(glGetUniformLocation(FBToBB.handle, "UseNormal"), app->useNormal ? 1 : 0);
+
+        glBindVertexArray(app->vao);
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
+
+        glBindVertexArray(0);
+        glUseProgram(0);
     }
     break;
     case Mode_Deferred:

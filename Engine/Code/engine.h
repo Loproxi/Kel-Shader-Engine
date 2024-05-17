@@ -110,6 +110,8 @@ struct App
     float pitch = -90.0f;
 
     bool firstMouseEnter = true;
+    bool useDepth = false;
+    bool useNormal = false;
 
 };
 
